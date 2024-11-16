@@ -38,14 +38,20 @@ fun DetailScreenNovene(novenenname: String) {
     val context = LocalContext.current
     val repository = RepositoryNovenen(context)
     val noveneDetails = remember { mutableStateListOf<Novene>() }
+    //val litaneiDetails = remember { mutableStateListOf<Novene>() }
 
     LaunchedEffect(novenenname) {
         val loadedDetails = repository.loadNovenenData(context)
         noveneDetails.addAll(loadedDetails.filter { it.Novenenname == novenenname })
+//        litaneiDetails.addAll(loadedDetails
+//            .filter { it.Novenenname == novenenname }
+//            .filter { it.Litanei.isNotEmpty()}
+//            .distinctBy { it.Litaneiueberschrift }
+//        )
     }
 
-    val expandedStates = remember { mutableStateMapOf<Int, Boolean>() } //state for unfolding
-
+    val expandedStatesNovene = remember { mutableStateMapOf<Int, Boolean>() } //state for unfolding
+    //val expandedStatesLitanei = remember { mutableStateMapOf<Int, Boolean>() } //state for unfolding
     LazyColumn {
         item {
             val imageId = getDrawableResIdentification(noveneDetails, "Bild")
@@ -64,17 +70,63 @@ fun DetailScreenNovene(novenenname: String) {
                 Spacer(modifier = Modifier.height(8.dp))// Add spacer below Image
         }
 
-        // List items
+        // List items Novene
         itemsIndexed(noveneDetails) { index, details ->
-            val isExpanded = expandedStates[index] ?: false
+            val isExpanded = expandedStatesNovene[index] ?: false
             DetailsItem(details, isExpanded) { // Pass isExpanded to DetailsItem
-                expandedStates[index] = !isExpanded // Toggle expanded state on click
+                expandedStatesNovene[index] = !isExpanded // Toggle expanded state on click
+            }
+        }
+
+//        // Litanei
+//        itemsIndexed(litaneiDetails) { index, details ->
+//            val isExpanded = expandedStatesLitanei[index] ?: false
+//            LitaneiItem(details, isExpanded) { // Pass isExpanded to DetailsItem
+//                expandedStatesLitanei[index] = !isExpanded // Toggle expanded state on click
+//            }
+//        }
+    }
+}
+
+@Composable
+fun LitaneiItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
+    val titleFont = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .clickable { onClick() }
+        ) {
+            Text(
+                text = novene.Litaneiueberschrift,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    fontFamily = titleFont,
+                    fontSize = MaterialTheme.typography.headlineSmall.fontSize
+                )
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Conditionally display Litanei-Text based on state in DetailScreenNovene
+            if (isExpanded) { // Access isExpanded from details object
+                Text(
+                    text = novene.Litanei,
+                    style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
+                )
             }
         }
     }
 }
 
-    @Composable
+@Composable
     fun DetailsItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
         val titleFont = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
 
@@ -115,6 +167,22 @@ fun DetailScreenNovene(novenenname: String) {
                         text = novene.Tagestext,
                         style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
                     )
+//Damit die  Karte in der Listview durch den Spacer keinen Gap unten aufweist, wenn es keine Litanei gibt
+                    if(novene.Litaneiueberschrift.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(28.dp))
+
+                        Text(
+                            text = novene.Litaneiueberschrift,
+                            style = TextStyle(fontSize = MaterialTheme.typography.headlineSmall.fontSize)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = novene.Litanei,
+                            style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
+                        )
+                    }
                 }
             }
         }
