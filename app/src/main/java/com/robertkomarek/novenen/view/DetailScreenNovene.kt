@@ -91,6 +91,7 @@ fun DetailScreenNovene(novenenname: String) {
 @Composable
 fun LitaneiItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
     val titleFont = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
+    val titleFontInitials = FontFamily(Font(R.font.tt_ramillas_initials_trialblack, FontWeight.Normal))
 
     Card(
         modifier = Modifier
@@ -129,6 +130,7 @@ fun LitaneiItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
 @Composable
     fun DetailsItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
         val titleFont = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
+        val titleFontInitials = FontFamily(Font(R.font.tt_ramillas_initials_trialblack, FontWeight.Normal))
 
         Card(
             modifier = Modifier
@@ -173,7 +175,7 @@ fun LitaneiItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
 
                         Text(
                             text = novene.Litaneiueberschrift,
-                            style = TextStyle(fontSize = MaterialTheme.typography.headlineSmall.fontSize)
+                            style = TextStyle(fontSize = MaterialTheme.typography.headlineSmall.fontSize, fontFamily = titleFontInitials )
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
