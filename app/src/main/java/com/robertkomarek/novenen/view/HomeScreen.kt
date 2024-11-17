@@ -39,14 +39,18 @@ import com.robertkomarek.novenen.repository.RepositoryNovenen
 import kotlin.jvm.java
 import androidx.compose.ui.text.font.Font
 import androidx.navigation.NavHostController
+import com.robertkomarek.novenen.repository.RepositoryBibelstelle
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val context = LocalContext.current
     val repository = RepositoryNovenen(context)
+    val rep_bible = RepositoryBibelstelle(context)
     val novenenList = remember { mutableStateListOf<Novene>() }
 
     LaunchedEffect(Unit) {
+        // TEST BIBELSTELLE MIT BILD
+        val bible_random = rep_bible.loadBibelstelle()
         val loadedNovenen = repository.loadNovenenData(context)
         novenenList.addAll(loadedNovenen
             .distinctBy { it.Novenenname }
