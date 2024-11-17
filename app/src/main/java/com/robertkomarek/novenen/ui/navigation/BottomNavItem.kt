@@ -12,6 +12,6 @@ sealed class BottomNavItem(var title: String, var icon: ImageVector, var screen_
     object HomeScreen : BottomNavItem("Novenen", Icons.Default.Home, "novenen")
     object BookmarksScreen : BottomNavItem("Lesezeichen", Icons.Default.Favorite, "bookmarks")
     object NotificationScreen : BottomNavItem("Erinnerung", Icons.Default.Notifications, "notification")
-    object ImpressumScreen : BottomNavItem("Impressum", Icons.Default.Person, "impressum")
+    object ImpressumScreen : BottomNavItem("Bibelstelle", Icons.Default.Person, "biblepassage")
 
 }

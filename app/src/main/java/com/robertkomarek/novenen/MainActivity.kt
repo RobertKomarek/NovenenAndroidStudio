@@ -17,7 +17,7 @@ import com.robertkomarek.novenen.ui.navigation.BottomNavItem
 import com.robertkomarek.novenen.ui.navigation.BottomNavigationBar
 import com.robertkomarek.novenen.view.BookmarksScreen
 import com.robertkomarek.novenen.view.HomeScreen
-import com.robertkomarek.novenen.view.ImpressumScreen
+import com.robertkomarek.novenen.view.BiblePassageScreen
 import com.robertkomarek.novenen.view.NotificationScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.robertkomarek.novenen.ui.theme.Purple80
@@ -55,7 +55,7 @@ fun NavigationComponent(navController: NavHostController, innerPadding: PaddingV
     ) {
         composable(BottomNavItem.HomeScreen.screen_route) { HomeScreen(navController) }
         composable(BottomNavItem.BookmarksScreen.screen_route) { BookmarksScreen() }
-        composable(BottomNavItem.ImpressumScreen.screen_route) { ImpressumScreen() }
+        composable(BottomNavItem.ImpressumScreen.screen_route) { BiblePassageScreen() }
         composable(BottomNavItem.NotificationScreen.screen_route) { NotificationScreen() }
         // ... other composable routes
         composable("details/{novenenname}") { backStackEntry ->
