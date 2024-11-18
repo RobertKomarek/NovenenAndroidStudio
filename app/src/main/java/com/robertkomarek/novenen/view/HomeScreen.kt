@@ -69,8 +69,8 @@ fun HomeScreen(navController: NavHostController) {
 @Composable
 fun NoveneItem(novene: Novene, onClick: () -> Unit) {
     val imageId = getDrawableResId(novene, "Bild")
-    val titleFont = FontFamily(Font(R.font.tt_ramillas_initials_trialblack, FontWeight.Normal)
-    )
+    val titleFont = FontFamily(Font(R.font.tt_ramillas_initials_trialblack, FontWeight.Normal))
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
