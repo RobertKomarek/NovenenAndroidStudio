@@ -7,10 +7,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.PageSize.Fill.calculateMainAxisPageSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -25,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -34,7 +31,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.robertkomarek.novenen.R
 import com.robertkomarek.novenen.model.Bibelstelle
 import com.robertkomarek.novenen.repository.RepositoryBibelstelle
@@ -51,20 +47,19 @@ fun BiblePassageScreen() {
     val randomBiblePassage = repository.loadBibelstelle()
     var showDetails by remember { mutableStateOf(false) }// State for card visibility
 
-    Box(modifier = Modifier
+    Column(modifier = Modifier
         .fillMaxSize()
         .background(PaperColor) // Papercolor
+        .padding(4.dp) // outer padding
     ){
         if (randomBiblePassage != null) {
-            Box(modifier = Modifier.fillMaxSize()) { // Corrected modifier and fillMaxSize
-                BiblePassageImage(randomBiblePassage, context)
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .weight(1f) // Ensures the image gets appropriate space
+            ) { // Corrected modifier and fillMaxSize
                 if (!showDetails) {
-                    BiblePassageButtonCard(
-                        onClick = { showDetails = true },
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(16.dp)
-                    )
+                BiblePassageImage(randomBiblePassage, context)
+
                 } else {
                     BiblePassageDetails(
                         bibelstelle = randomBiblePassage,
@@ -76,6 +71,14 @@ fun BiblePassageScreen() {
             }
         } else {
             Text("No Bibelstelle found", modifier = Modifier.padding(16.dp))
+        }
+
+        Spacer(modifier = Modifier.height(4.dp)) // Space between content and button
+        if (!showDetails) {
+                BiblePassageButtonCard(
+                    onClick = { showDetails = true },
+                    modifier = Modifier.fillMaxWidth()
+                )
         }
     }
 }
@@ -93,7 +96,7 @@ fun BiblePassageImage(bibelstelle: Bibelstelle, context: Context) {
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(2.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .border(3.dp, Color.LightGray, RoundedCornerShape(16.dp)),
             contentScale = ContentScale.Crop // Adjust content scale as needed
@@ -112,19 +115,21 @@ fun BiblePassageButtonCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .padding(top = 8.dp, bottom = 16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = PurpleGrey40) // Change background color of object 'Hier Bibelstelle ziehen'
+        colors = CardDefaults.cardColors(containerColor = PurpleGrey40)
     ) {
         Box(
             Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .wrapContentSize()
+                .padding(18.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "Hier Bibelstelle ziehen".uppercase(),
-                style = TextStyle(fontFamily = fontRamillas, fontSize = MaterialTheme.typography.titleLarge.fontSize),
+                style = TextStyle(fontFamily = fontRamillas,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize),
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
@@ -136,32 +141,61 @@ fun BiblePassageButtonCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
 fun BiblePassageDetails(bibelstelle: Bibelstelle, modifier: Modifier = Modifier) {
 
     val fontRamillas = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
-    val initialFontSize = MaterialTheme.typography.bodyLarge.fontSize
-
-    // State to track text size for pinch-to-zoom
-    var textSize by remember { mutableStateOf(initialFontSize) }
+//    val initialFontSize = MaterialTheme.typography.bodyLarge.fontSize
+//
+//    // State to track text size for pinch-to-zoom
+//    var textSize by remember { mutableStateOf(initialFontSize) }
+//
+//    // Modifier for scroll and zoom handling
+//    val scrollState = rememberScrollState()
+//    val zoomableModifier = Modifier.pointerInput(Unit) {
+//        detectTransformGestures { _, _, zoom, _ ->
+//            textSize = (textSize.value * zoom).coerceIn(12f, 40f).sp
+//        }
+//    }
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = modifier
             .background(PaperColor)
             .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-            .pointerInput(Unit) {
-                detectTransformGestures { _, _, zoom, _ ->
-                    // Adjust text size dynamically within a reasonable range
-                    textSize = (textSize.value * zoom).coerceIn(12f,40f).sp
-                }
-            },
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally // Center-aligns all children
     ) {
-        Text(text = bibelstelle.Buchname.uppercase(), style = TextStyle(fontFamily = fontRamillas,
-            fontSize = MaterialTheme.typography.titleLarge.fontSize, color = Color.DarkGray))
-        Text(text = bibelstelle.Buch, style = TextStyle(fontFamily = fontRamillas,
-            fontSize = MaterialTheme.typography.titleLarge.fontSize, color = Color.DarkGray))
-        Text(text = bibelstelle.Kapitel, style = TextStyle(fontFamily = fontRamillas,
-            fontSize = MaterialTheme.typography.titleLarge.fontSize, color = Color.DarkGray))
+        Text(
+            text = bibelstelle.Buchname.uppercase(),
+            style = TextStyle(
+                fontFamily = fontRamillas,
+                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                color = Color.DarkGray
+            ),
+            textAlign = TextAlign.Center // Ensures text itself is centered
+        )
+        Text(
+            text = bibelstelle.Buch,
+            style = TextStyle(
+                fontFamily = fontRamillas,
+                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                color = Color.DarkGray
+            ),
+            textAlign = TextAlign.Center // Ensures text itself is centered
+        )
+        Text(
+            text = bibelstelle.Kapitel,
+            style = TextStyle(
+                fontFamily = fontRamillas,
+                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                color = Color.DarkGray
+            ),
+            textAlign = TextAlign.Center // Ensures text itself is centered
+        )
         Spacer(Modifier.height(8.dp))
-        Text(text = bibelstelle.Kapiteltext, fontSize = textSize)
+        Text(
+            text = bibelstelle.Kapiteltext,
+            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+            textAlign = TextAlign.Justify // Ensures text itself is centered
+        )
     }
 }
 

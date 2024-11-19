@@ -50,10 +50,11 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.material3:material3:1.3.1")
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.accompanist)
     implementation(libs.gson)
-    implementation(libs.androidx.material) // Use the latest version
+    implementation(libs.androidx.material)
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.core.ktx)
