@@ -1,8 +1,10 @@
 package com.robertkomarek.novenen.view
 
 import android.content.Context
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,12 +48,9 @@ import com.robertkomarek.novenen.repository.RepositoryBibelstelle
 fun HomeScreen(navController: NavHostController) {
     val context = LocalContext.current
     val repository = RepositoryNovenen(context)
-    val rep_bible = RepositoryBibelstelle(context)
     val novenenList = remember { mutableStateListOf<Novene>() }
 
     LaunchedEffect(Unit) {
-        // TEST BIBELSTELLE MIT BILD
-        val bible_random = rep_bible.loadBibelstelle()
         val loadedNovenen = repository.loadNovenenData(context)
         novenenList.addAll(loadedNovenen
             .distinctBy { it.Novenenname }
@@ -81,9 +81,10 @@ fun NoveneItem(novene: Novene, onClick: () -> Unit) {
     ) {
         if (imageId != null) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .padding(16.dp) // Add padding inside the card
+                    .padding(16.dp), // Add padding inside the card
+                verticalAlignment = Alignment.CenterVertically
+                //horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 // Image with contentScale and padding to shift the image down
                 Image(
@@ -108,7 +109,15 @@ fun NoveneItem(novene: Novene, onClick: () -> Unit) {
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
+
+//                Icon(
+//                    painter = painterResource(id = R.drawable.baseline_bookmark_24),
+//                    contentDescription = "bookmark_baseline",
+//                    modifier = Modifier
+//                        .size(24.dp)
+//                )
             }
+
         } else {
             // Handle resource not found, e.g., display a placeholder image
             Image(

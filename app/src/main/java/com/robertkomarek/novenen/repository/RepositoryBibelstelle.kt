@@ -1,17 +1,9 @@
 package com.robertkomarek.novenen.repository
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.robertkomarek.novenen.model.Bibelstelle
-import com.robertkomarek.novenen.model.Novene
-import java.io.IOException
-import java.lang.reflect.Type
-import kotlin.random.Random
 
 class RepositoryBibelstelle(private val context: Context) {
 
@@ -34,12 +26,6 @@ class RepositoryBibelstelle(private val context: Context) {
             randomBibelstelle.imagePath = "images_bible/$randomImage"
         }
 
-//        bibelstellen.forEach { bibelstelle ->
-//            if (imageFiles.isNotEmpty()) {
-//                val randomImage = imageFiles.random()
-//                bibelstelle.imagePath = "images_bible/$randomImage"
-//            }
-//        }
         return randomBibelstelle
     }
 }
