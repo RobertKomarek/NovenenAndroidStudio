@@ -66,8 +66,8 @@ fun DetailScreenNovene(novenenname: String) {
                         .size(350.dp),
                     contentScale = ContentScale.Crop
                 )}
-                //Add distance between Image and following text items
-                Spacer(modifier = Modifier.height(8.dp))// Add spacer below Image
+            //Add distance between Image and following text items
+            Spacer(modifier = Modifier.height(8.dp))// Add spacer below Image
         }
 
         // List items Novene
@@ -89,7 +89,7 @@ fun DetailScreenNovene(novenenname: String) {
 }
 
 @Composable
-fun LitaneiItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
+fun DetailsItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
     val titleFont = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
     val titleFontInitials = FontFamily(Font(R.font.tt_ramillas_initials_trialblack, FontWeight.Normal))
 
@@ -104,131 +104,91 @@ fun LitaneiItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
             modifier = Modifier
                 .padding(16.dp)
                 .clickable { onClick() }
+            //Apply background color conditionally
+            //.background(if (isExpanded) Color.LightGray else Color.Transparent)
         ) {
             Text(
-                text = novene.Litaneiueberschrift,
+                text = novene.Tag,
                 fontWeight = FontWeight.Bold,
                 style = TextStyle(
                     fontFamily = titleFont,
                     fontSize = MaterialTheme.typography.headlineSmall.fontSize
                 )
             )
-
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Conditionally display Litanei-Text based on state in DetailScreenNovene
+            // Conditionally display Tagestext based on state in DetailScreenNovene
             if (isExpanded) { // Access isExpanded from details object
                 Text(
-                    text = novene.Litanei,
-                    style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
+                    text = novene.Tagesueberschrift,
+                    style = TextStyle(fontSize = MaterialTheme.typography.headlineSmall.fontSize)
                 )
-            }
-        }
-    }
-}
 
-@Composable
-    fun DetailsItem(novene: Novene, isExpanded: Boolean, onClick: () -> Unit) {
-        val titleFont = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
-        val titleFontInitials = FontFamily(Font(R.font.tt_ramillas_initials_trialblack, FontWeight.Normal))
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .clickable(onClick = onClick),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .clickable { onClick() }
-                    //Apply background color conditionally
-                    //.background(if (isExpanded) Color.LightGray else Color.Transparent)
-            ) {
-                Text(
-                    text = novene.Tag,
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        fontFamily = titleFont,
-                        fontSize = MaterialTheme.typography.headlineSmall.fontSize
-                    )
-                )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Conditionally display Tagestext based on state in DetailScreenNovene
-                if (isExpanded) { // Access isExpanded from details object
+                Text(
+                    text = novene.Tagestext,
+                    style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
+                )
+//Damit die  Karte in der Listview durch den Spacer keinen Gap unten aufweist, wenn es keine Litanei gibt
+                if(novene.Litaneiueberschrift.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(28.dp))
+
                     Text(
-                        text = novene.Tagesueberschrift,
-                        style = TextStyle(fontSize = MaterialTheme.typography.headlineSmall.fontSize)
+                        text = novene.Litaneiueberschrift,
+                        style = TextStyle(fontSize = MaterialTheme.typography.headlineSmall.fontSize, fontFamily = titleFontInitials )
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = novene.Tagestext,
+                        text = novene.Litanei,
                         style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
                     )
-//Damit die  Karte in der Listview durch den Spacer keinen Gap unten aufweist, wenn es keine Litanei gibt
-                    if(novene.Litaneiueberschrift.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(28.dp))
-
-                        Text(
-                            text = novene.Litaneiueberschrift,
-                            style = TextStyle(fontSize = MaterialTheme.typography.headlineSmall.fontSize, fontFamily = titleFontInitials )
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = novene.Litanei,
-                            style = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize)
-                        )
-                    }
                 }
             }
         }
     }
+}
 
 
-    fun getDrawableResIdentification(noveneList: List<Novene>, fieldName: String): Int? {
-        val novene = noveneList.firstOrNull() ?: return null
+fun getDrawableResIdentification(noveneList: List<Novene>, fieldName: String): Int? {
+    val novene = noveneList.firstOrNull() ?: return null
 
-        return try {
-            // Use the 'novene' object for reflection
-            val field = novene::class.java.getDeclaredField(fieldName)
-            field.isAccessible = true
+    return try {
+        // Use the 'novene' object for reflection
+        val field = novene::class.java.getDeclaredField(fieldName)
+        field.isAccessible = true
 
-            val annotation = field.getAnnotation(DrawableResource::class.java)
+        val annotation = field.getAnnotation(DrawableResource::class.java)
 
-            if (annotation != null) {
-                val resourceClass = annotation.value.java
+        if (annotation != null) {
+            val resourceClass = annotation.value.java
 
-                val resourceNameWithExtension = field.get(novene) as? String
-                if (resourceNameWithExtension.isNullOrEmpty()) {
-                    println("Resource name is null or empty for field: $fieldName")
-                    return null
-                }
-
-                val resourceName = resourceNameWithExtension.substringBeforeLast(".")
-
-                val idField = resourceClass.getDeclaredField(resourceName)
-                idField.getInt(null)
-            } else {
-                println("No DrawableResource annotation found for field: $fieldName")
-                null
+            val resourceNameWithExtension = field.get(novene) as? String
+            if (resourceNameWithExtension.isNullOrEmpty()) {
+                println("Resource name is null or empty for field: $fieldName")
+                return null
             }
-        } catch (e: NoSuchFieldException) {
-            println("Field not found: ${e.message}")
-            null
-        } catch (e: IllegalAccessException) {
-            println("Illegal access to field: ${e.message}")
-            null
-        } catch (e: Exception) {
-            println("Error retrieving drawable resource ID: ${e.message}")
+
+            val resourceName = resourceNameWithExtension.substringBeforeLast(".")
+
+            val idField = resourceClass.getDeclaredField(resourceName)
+            idField.getInt(null)
+        } else {
+            println("No DrawableResource annotation found for field: $fieldName")
             null
         }
+    } catch (e: NoSuchFieldException) {
+        println("Field not found: ${e.message}")
+        null
+    } catch (e: IllegalAccessException) {
+        println("Illegal access to field: ${e.message}")
+        null
+    } catch (e: Exception) {
+        println("Error retrieving drawable resource ID: ${e.message}")
+        null
     }
-
+}
 
 

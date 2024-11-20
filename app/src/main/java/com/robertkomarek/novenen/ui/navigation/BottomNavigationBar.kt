@@ -19,7 +19,7 @@ fun BottomNavigationBar(navController: NavController) {
         BottomNavItem.HomeScreen,
         BottomNavItem.BookmarksScreen,
         BottomNavItem.NotificationScreen,
-        BottomNavItem.ImpressumScreen
+        BottomNavItem.BiblePassageScreen
     )
     BottomNavigation(
         backgroundColor = Pink80,

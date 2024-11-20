@@ -3,6 +3,7 @@ package com.robertkomarek.novenen.view
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +48,11 @@ fun BiblePassageScreen() {
     val randomBiblePassage = repository.loadBibelstelle()
     var showDetails by remember { mutableStateOf(false) }// State for card visibility
 
+    // LaunchedEffect to reset showDetails when navigating back
+    HandleBackPress (showDetails) {
+        showDetails = false
+    }
+
     Column(modifier = Modifier
         .fillMaxSize()
         .background(PaperColor) // Papercolor
@@ -83,6 +89,12 @@ fun BiblePassageScreen() {
     }
 }
 
+// Separate composable function for BackHandler
+@Composable
+fun HandleBackPress(showDetails: Boolean, onBack: () -> Unit) {
+    BackHandler(enabled = showDetails) { onBack()
+    }
+}
 
 @Composable
 fun BiblePassageImage(bibelstelle: Bibelstelle, context: Context) {
@@ -141,18 +153,6 @@ fun BiblePassageButtonCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
 fun BiblePassageDetails(bibelstelle: Bibelstelle, modifier: Modifier = Modifier) {
 
     val fontRamillas = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
-//    val initialFontSize = MaterialTheme.typography.bodyLarge.fontSize
-//
-//    // State to track text size for pinch-to-zoom
-//    var textSize by remember { mutableStateOf(initialFontSize) }
-//
-//    // Modifier for scroll and zoom handling
-//    val scrollState = rememberScrollState()
-//    val zoomableModifier = Modifier.pointerInput(Unit) {
-//        detectTransformGestures { _, _, zoom, _ ->
-//            textSize = (textSize.value * zoom).coerceIn(12f, 40f).sp
-//        }
-//    }
     val scrollState = rememberScrollState()
 
     Column(

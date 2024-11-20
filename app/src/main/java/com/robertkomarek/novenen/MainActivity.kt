@@ -55,7 +55,7 @@ fun NavigationComponent(navController: NavHostController, innerPadding: PaddingV
     ) {
         composable(BottomNavItem.HomeScreen.screen_route) { HomeScreen(navController) }
         composable(BottomNavItem.BookmarksScreen.screen_route) { BookmarksScreen() }
-        composable(BottomNavItem.ImpressumScreen.screen_route) { BiblePassageScreen() }
+        composable(BottomNavItem.BiblePassageScreen.screen_route) { BiblePassageScreen() }
         composable(BottomNavItem.NotificationScreen.screen_route) { NotificationScreen() }
         // ... other composable routes
         composable("details/{novenenname}") { backStackEntry ->
