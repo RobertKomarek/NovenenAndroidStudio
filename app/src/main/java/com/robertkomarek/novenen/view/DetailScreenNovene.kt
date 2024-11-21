@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -80,6 +82,7 @@ fun DetailScreenNovene(novenenname: String) {
                 details,
                 isExpanded,
                 isBookmarked,
+                index,
                 onClick = { expandedStatesNovene[index] = !isExpanded },
                 onBookmarkClick = {
                     if (isBookmarked) {
@@ -88,9 +91,7 @@ fun DetailScreenNovene(novenenname: String) {
                         bookmarkedNoveneTag.value = details.Tag // Set the new bookmark
                         //clear any previous bookmarks
                     }
-
                     bookmarkDataStore.setBookmarkedNoveneTag(novenenname, bookmarkedNoveneTag.value)
-
                 }
             )
         }
@@ -103,6 +104,7 @@ fun DetailsItem(
     novene: Novene,
     isExpanded: Boolean,
     isBookmarked: Boolean,
+    index: Int,
     onClick: () -> Unit,
     onBookmarkClick: () -> Unit
 ) {
@@ -122,7 +124,6 @@ fun DetailsItem(
                 .padding(16.dp)
                 .clickable { onClick() }
             //Apply background color conditionally
-            //.background(if (isExpanded) Color.LightGray else Color.Transparent)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -138,15 +139,19 @@ fun DetailsItem(
                 )
 
                 // Bookmark icon
-                Icon(
-                    painter = painterResource(
-                        id = if (isBookmarked) R.drawable.baseline_bookmark_24 else R.drawable.baseline_bookmark_border_24
-                    ),
-                    contentDescription = "Bookmark",
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { onBookmarkClick() }
-                )
+                if (index > 0) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (isBookmarked) R.drawable.baseline_bookmark_24 else
+                                R.drawable.baseline_bookmark_border_24
+                        ),
+                        contentDescription = "Bookmark",
+                        tint = if (isBookmarked) Color.Red else LocalContentColor.current,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onBookmarkClick() }
+                    )
+                }
             }
 
                 Spacer(modifier = Modifier.height(8.dp))

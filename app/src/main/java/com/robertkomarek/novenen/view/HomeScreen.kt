@@ -172,4 +172,3 @@ fun getDrawableResId(novene: Novene, fieldName: String): Int? {
         null
     }
 }
-
