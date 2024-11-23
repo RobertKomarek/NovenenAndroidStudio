@@ -1,10 +1,9 @@
 package com.robertkomarek.novenen.ui.navigation
 
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,27 +16,25 @@ import com.robertkomarek.novenen.ui.theme.Pink80
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         BottomNavItem.HomeScreen,
-        BottomNavItem.BookmarksScreen,
+        BottomNavItem.BiblePassageScreen,
         BottomNavItem.NotificationScreen,
-        BottomNavItem.BiblePassageScreen
+        BottomNavItem.SettingsScreen,
     )
-    BottomNavigation(
-        backgroundColor = Pink80,
+    NavigationBar ( // Use NavigationBar from material3 instead of BottomNavigation
+        containerColor = Pink80,
         contentColor = Color.White,
         modifier = Modifier.navigationBarsPadding()
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currenRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
-            BottomNavigationItem(
-                icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
-                label = { Text(text = item.title) },
+            NavigationBarItem( // use NavigationBarItem instead of BottomNavigationItem
+                icon = { Icon(imageVector = item.icon(), contentDescription = item.title) },
                 selected = currenRoute == item.screen_route,
                 onClick = {
                     navController.navigate(item.screen_route) {
-                        // Pop up to the root destination of the graph to
-                        // avoid building up a large stack of destinations
-                        // on the back stack as users select items
+                        // Pop up to the root destination of the graph to avoid building up a large
+                        // stack of destinations on the back stack as users select items
                         navController.graph.startDestinationRoute?.let {
                             screen_route ->
                                 popUpTo(screen_route) {

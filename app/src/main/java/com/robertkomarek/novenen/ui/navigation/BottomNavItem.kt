@@ -1,16 +1,22 @@
 package com.robertkomarek.novenen.ui.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.robertkomarek.novenen.R
 
-sealed class BottomNavItem(var title: String, var icon: ImageVector, var screen_route: String) {
-    object HomeScreen : BottomNavItem("Novenen", Icons.Default.Home, "novenen")
-    object BookmarksScreen : BottomNavItem("Lesezeichen", Icons.Default.Favorite, "bookmarks")
-    object NotificationScreen : BottomNavItem("Erinnerung", Icons.Default.Notifications, "notification")
-    object BiblePassageScreen : BottomNavItem("Bibelstelle", Icons.Default.Person, "biblepassage")
 
+sealed class BottomNavItem(var title: String, var icon: @Composable () -> ImageVector, var screen_route: String) {
+
+    object HomeScreen : BottomNavItem("Novenen", { BookmarkIcon(R.drawable.baseline_view_list_32) }, "novenen")
+    object BiblePassageScreen : BottomNavItem("Bibelstelle", { BookmarkIcon(R.drawable.baseline_menu_book_32) }, "biblepassage")
+    object SettingsScreen : BottomNavItem("Lesezeichen", { BookmarkIcon(R.drawable.baseline_app_settings_alt_32) }, "bookmarks")
+    object NotificationScreen :
+        BottomNavItem("Erinnerung", { BookmarkIcon(R.drawable.baseline_notifications_32) }, "notification")
 }
+
+@Composable
+fun BookmarkIcon(iconId:Int): ImageVector {
+    return ImageVector.vectorResource(id = iconId)
+}
+

@@ -15,7 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.robertkomarek.novenen.ui.navigation.BottomNavItem
 import com.robertkomarek.novenen.ui.navigation.BottomNavigationBar
-import com.robertkomarek.novenen.view.BookmarksScreen
+import com.robertkomarek.novenen.view.SettingsScreen
 import com.robertkomarek.novenen.view.HomeScreen
 import com.robertkomarek.novenen.view.BiblePassageScreen
 import com.robertkomarek.novenen.view.NotificationScreen
@@ -54,7 +54,7 @@ fun NavigationComponent(navController: NavHostController, innerPadding: PaddingV
         modifier = Modifier.padding(innerPadding)
     ) {
         composable(BottomNavItem.HomeScreen.screen_route) { HomeScreen(navController) }
-        composable(BottomNavItem.BookmarksScreen.screen_route) { BookmarksScreen() }
+        composable(BottomNavItem.SettingsScreen.screen_route) { SettingsScreen() }
         composable(BottomNavItem.BiblePassageScreen.screen_route) { BiblePassageScreen() }
         composable(BottomNavItem.NotificationScreen.screen_route) { NotificationScreen() }
         // ... other composable routes
