@@ -39,6 +39,7 @@ import com.robertkomarek.novenen.repository.RepositoryNovenen
 import kotlin.jvm.java
 import androidx.compose.ui.text.font.Font
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -51,7 +52,7 @@ fun HomeScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
         val loadedNovenen = repository.loadNovenenData(context)
-            val processedNovenen = loadedNovenen
+        val processedNovenen = loadedNovenen
                 .distinctBy { it.Novenenname }
                 .sortedBy { it.Novenenname }
             withContext(Dispatchers.Main) {
@@ -80,7 +81,7 @@ fun NoveneItem(novene: Novene, onClick: () -> Unit) {
             .padding(8.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         if (imageId != null) {
             Row(
@@ -89,8 +90,8 @@ fun NoveneItem(novene: Novene, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Image with contentScale and padding to shift the image down
-                Image(
-                    painter = painterResource(id = imageId),
+                AsyncImage(
+                    model = imageId,
                     contentDescription = null,
                     modifier = Modifier
                         .size(80.dp)

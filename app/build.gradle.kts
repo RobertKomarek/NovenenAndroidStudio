@@ -50,7 +50,8 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation(libs.material3)
+    implementation(libs.coil.compose)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.accompanist)
     implementation(libs.gson)
