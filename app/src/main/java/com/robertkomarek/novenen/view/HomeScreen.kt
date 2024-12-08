@@ -1,10 +1,8 @@
 package com.robertkomarek.novenen.view
 
-import android.content.Context
-import android.graphics.drawable.Icon
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,7 +39,8 @@ import com.robertkomarek.novenen.repository.RepositoryNovenen
 import kotlin.jvm.java
 import androidx.compose.ui.text.font.Font
 import androidx.navigation.NavHostController
-import com.robertkomarek.novenen.repository.RepositoryBibelstelle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -51,10 +49,15 @@ fun HomeScreen(navController: NavHostController) {
     val novenenList = remember { mutableStateListOf<Novene>() }
 
     LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
         val loadedNovenen = repository.loadNovenenData(context)
-        novenenList.addAll(loadedNovenen
-            .distinctBy { it.Novenenname }
-            .sortedBy { it.Novenenname })
+            val processedNovenen = loadedNovenen
+                .distinctBy { it.Novenenname }
+                .sortedBy { it.Novenenname }
+            withContext(Dispatchers.Main) {
+                novenenList.addAll(processedNovenen)
+            }
+        }
     }
 
     LazyColumn {
@@ -84,7 +87,6 @@ fun NoveneItem(novene: Novene, onClick: () -> Unit) {
                 modifier = Modifier
                     .padding(16.dp), // Add padding inside the card
                 verticalAlignment = Alignment.CenterVertically
-                //horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 // Image with contentScale and padding to shift the image down
                 Image(
@@ -97,6 +99,7 @@ fun NoveneItem(novene: Novene, onClick: () -> Unit) {
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
+
                 Column {
                     Text(
                         text = novene.Novenenname,
@@ -109,15 +112,7 @@ fun NoveneItem(novene: Novene, onClick: () -> Unit) {
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
-
-//                Icon(
-//                    painter = painterResource(id = R.drawable.baseline_bookmark_24),
-//                    contentDescription = "bookmark_baseline",
-//                    modifier = Modifier
-//                        .size(24.dp)
-//                )
             }
-
         } else {
             // Handle resource not found, e.g., display a placeholder image
             Image(
