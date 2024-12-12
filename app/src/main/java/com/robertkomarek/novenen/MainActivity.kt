@@ -29,6 +29,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+//        val repository = RepositoryNovenen(this)
+//        val loadedNovenen = repository.loadNovenenData(this)
+//        val novenenList = loadedNovenen
+//            .distinctBy { it.Novenenname }
+//            .sortedBy { it.Novenenname }
+
         setContent {
             //Set statusbar background color
             val systemUiController = rememberSystemUiController()
@@ -47,7 +53,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun NavigationComponent(navController: NavHostController, innerPadding: PaddingValues) {
+fun NavigationComponent(
+    navController: NavHostController,
+    innerPadding: PaddingValues,
+    //novenenList: List<Novene>
+){
     NavHost(
         navController = navController,
         startDestination = BottomNavItem.HomeScreen.screen_route,
