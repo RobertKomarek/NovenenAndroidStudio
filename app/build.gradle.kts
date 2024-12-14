@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.robertkomarek.novenen"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -50,7 +50,9 @@ android {
 }
 
 dependencies {
-    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-pager:0.36.0")
+    implementation(libs.androidx.core.ktx.v190)
+    //implementation(libs.androidx.core.ktx)
     //implementation (libs.androidx.material3.v120alpha04)
     implementation(libs.material3)
     implementation(libs.coil.compose)
@@ -59,7 +61,6 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.androidx.material)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

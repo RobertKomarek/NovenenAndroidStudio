@@ -1,5 +1,6 @@
 package com.robertkomarek.novenen
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,12 +31,6 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-//        val repository = RepositoryNovenen(this)
-//        val loadedNovenen = repository.loadNovenenData(this)
-//        val novenenList = loadedNovenen
-//            .distinctBy { it.Novenenname }
-//            .sortedBy { it.Novenenname }
 
         setContent {
             //Set statusbar background color
