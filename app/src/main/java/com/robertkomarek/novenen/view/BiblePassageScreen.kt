@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -130,7 +131,8 @@ fun BiblePassageButtonCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .clickable { onClick() }
             .padding(top = 8.dp, bottom = 16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = PurpleGrey40)
+        colors = CardDefaults.cardColors(containerColor = PurpleGrey40),
+        shape = RoundedCornerShape(32.dp)
     ) {
         Box(
             Modifier

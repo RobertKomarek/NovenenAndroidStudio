@@ -2,19 +2,22 @@ package com.robertkomarek.novenen.view
 
 import android.app.TimePickerDialog
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +32,7 @@ import com.robertkomarek.novenen.R
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.Locale
+import com.robertkomarek.novenen.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,146 +64,171 @@ fun NotificationScreen() {
         }
     }
 
-    Column {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ){
-            Text(  modifier = Modifier.padding(16.dp),
-                text = "Erinnerung speichern",
-                style = TextStyle(fontFamily = titleFont, fontSize = MaterialTheme.typography.headlineMedium.fontSize),
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Purple80, Color.LightGray, Color.White),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        }
-//        Image(
-//            painter = painterResource(id = R.drawable.notification_icon),
-//            contentDescription = null,
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(200.dp)
-//                .padding(38.dp)
-//        )
-
-        Image(
-            painter = painterResource(id = imageResource),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(350.dp)
-                .padding(horizontal = 38.dp, vertical = 16.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .border(3.dp, Color.LightGray, RoundedCornerShape(16.dp)),
-            contentScale = ContentScale.Crop
-        )
-
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-            TextField(
-                readOnly = true,
-                value = selectedNovenenname,
-                onValueChange = { },
-                label = { Text("Novene auswählen") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                colors = ExposedDropdownMenuDefaults.textFieldColors(),
+    ) {
+        Column {
+            Image(
+                painter = painterResource(id = R.drawable.bell),
+                contentDescription = null,
                 modifier = Modifier
-                    .menuAnchor()
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .height(120.dp)
+                    .padding(vertical = 32.dp)
             )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                novenenList.forEach { novene ->
-                    DropdownMenuItem(
-                        text = { Text(novene.Novenenname) },
-                        onClick = {
-                            selectedNovenenname = novene.Novenenname
-                            selectedNovene = novene
-                            expanded = false
+//        Box(
+//            modifier = Modifier.fillMaxWidth(),
+//            contentAlignment = Alignment.Center
+//        ){
+//            Text(  modifier = Modifier.padding(horizontal = 16.dp),
+//                text = "Speichern Sie eine Erinnerung über eine Novene!",
+//                style = TextStyle(fontFamily = titleFont, fontSize = MaterialTheme.typography.headlineMedium.fontSize),
+//            )
+//        }
+            val imageWidth =
+                LocalConfiguration.current.screenWidthDp.dp - (38.dp * 2) // Caluclate width
+            Image(
+                painter = painterResource(id = imageResource),
+                contentDescription = null,
+                modifier = Modifier
+                    .height(imageWidth)
+                    .padding(horizontal = 48.dp, vertical = 16.dp)
+                    .fillMaxWidth()
+                    .clip(CircleShape)
+                    .border(3.dp, Color.LightGray, CircleShape),
+                contentScale = ContentScale.Crop
+            )
 
-                            // Update imageResource based on selectedNovene
-                            val imageName = novene.Bild.removeSuffix(".jpg")
-                            imageResource = context.resources.getIdentifier(imageName, "drawable", context.packageName)
-                        }
-                    )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
+            ) {
+                TextField(
+                    readOnly = true,
+                    value = selectedNovenenname,
+                    onValueChange = { },
+                    label = { Text("Novene auswählen") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    novenenList.forEach { novene ->
+                        DropdownMenuItem(
+                            text = { Text(novene.Novenenname) },
+                            onClick = {
+                                selectedNovenenname = novene.Novenenname
+                                selectedNovene = novene
+                                expanded = false
+
+                                // Update imageResource based on selectedNovene
+                                val imageName = novene.Bild.removeSuffix(".jpg")
+                                imageResource = context.resources.getIdentifier(
+                                    imageName,
+                                    "drawable",
+                                    context.packageName
+                                )
+                            }
+                        )
+                    }
                 }
             }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        selectedNovene?.let {
-            TextField(
-                value = it.Zeitraum,
-                onValueChange = {},
+            Spacer(modifier = Modifier.height(16.dp))
+            selectedNovene?.let {
+                TextField(
+                    value = it.Zeitraum,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Zeitraum") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            } ?: TextField( // Provide default TextField when selectedNovene is null
+                value = "4. bis 12. Mai", // Replace with your desired default value
+                onValueChange = { },
                 readOnly = true,
                 label = { Text("Zeitraum") },
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
             )
-        } ?: TextField( // Provide default TextField when selectedNovene is null
-            value = "4. bis 12. Mai", // Replace with your desired default value
-            onValueChange = { },
-            readOnly = true,
-            label = { Text("Zeitraum") },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        // Date Picker
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(onClick = { showDatePicker = true }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_calendar_month_24),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .zIndex(1f)
-                )
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Kalender aufrufen")
-                //Text("Erinnerung am (hier tippen): ${selectedDate.format(dateFormatter)}")
+            Spacer(modifier = Modifier.height(16.dp))
+            // Date Picker
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    onClick = { showDatePicker = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PurpleGrey40, // Background color
+                        contentColor = Color.White // Text color
+                    ))
+                {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_calendar_month_24),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .zIndex(1f)
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("Kalender aufrufen")
+                    //Text("Erinnerung am (hier tippen): ${selectedDate.format(dateFormatter)}")
+                }
             }
-        }
 
-        // Show the DatePickerDialog
-        if (showDatePicker) {
-            AndroidDatePickerDialog(
-                context = context,
-                initialDate = selectedDate,
-                onDateSelected = { date ->
-                    selectedDate = date
-                    showDatePicker = false
-                    // Show TimePickerDialog after date selection
-                    showTimePicker = true
-                },
-                onDismiss = { showDatePicker = false }
-            )
-        }
-        // Time Picker
-        if (showTimePicker) {
-            val timePickerDialog = TimePickerDialog(
-                context,
-                { _, hourOfDay, minute ->
-                    selectedTime = LocalTime.of(hourOfDay, minute)
-                    showTimePicker = false
-                    // Show confirmation dialog
-                    showConfirmationDialog = true
-                },
-                selectedTime.hour,
-                selectedTime.minute,
-                true
-            )
-            timePickerDialog.show()
-        }
-    } // END OF COLUMN
+            // Show the DatePickerDialog
+            if (showDatePicker) {
+                AndroidDatePickerDialog(
+                    context = context,
+                    initialDate = selectedDate,
+                    onDateSelected = { date ->
+                        selectedDate = date
+                        showDatePicker = false
+                        // Show TimePickerDialog after date selection
+                        showTimePicker = true
+                    },
+                    onDismiss = { showDatePicker = false }
+                )
+            }
+            // Time Picker
+            if (showTimePicker) {
+                val timePickerDialog = TimePickerDialog(
+                    context,
+                    { _, hourOfDay, minute ->
+                        selectedTime = LocalTime.of(hourOfDay, minute)
+                        showTimePicker = false
+                        // Show confirmation dialog
+                        showConfirmationDialog = true
+                    },
+                    selectedTime.hour,
+                    selectedTime.minute,
+                    true
+                )
+                timePickerDialog.show()
+            }
+        } // END OF COLUMN
+    } // END OF BOX
 
     if (showConfirmationDialog) {
         val formattedDateTime = selectedDate.format(dateFormatter) + " " + selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))
@@ -222,17 +251,6 @@ fun NotificationScreen() {
         )
     }
 }
-
-// Function to load a Bitmap from an image-path
-//fun loadBitmapFromPath(context: Context, path: String): Bitmap? {
-//    return try {
-//        context.assets.open(path).use { BitmapFactory.decodeStream(it) }
-//    } catch (e: IOException) {
-//        e.printStackTrace()
-//        null
-//    }
-//}
-
 
 @Composable
 fun AndroidDatePickerDialog(
