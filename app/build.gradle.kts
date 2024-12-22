@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.robertkomarek.novenen"
-        minSdk = 26
+        minSdk = 33
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -51,22 +51,24 @@ android {
 
 dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.36.0")
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.core.ktx.v190)
     //implementation(libs.androidx.core.ktx)
     //implementation (libs.androidx.material3.v120alpha04)
     implementation(libs.material3)
+//    implementation(libs.androidx.material)
+//    implementation(libs.androidx.material3)
+//    implementation(libs.material)
     implementation(libs.coil.compose)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.accompanist)
     implementation(libs.gson)
-    implementation(libs.androidx.material)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.activity.ktx)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.recyclerview)
-    implementation(libs.material)
     implementation(libs.androidx.core.i18n)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

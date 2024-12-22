@@ -1,9 +1,7 @@
 package com.robertkomarek.novenen.view
 
 import android.app.TimePickerDialog
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -18,9 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import java.time.format.DateTimeFormatter
@@ -29,10 +25,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.robertkomarek.novenen.model.Novene
 import com.robertkomarek.novenen.R
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.*
 import java.util.Locale
 import com.robertkomarek.novenen.ui.theme.*
+import androidx.work.*
+import com.robertkomarek.novenen.notification.NotificationWorker
+import java.util.concurrent.TimeUnit
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,9 +50,25 @@ fun NotificationScreen() {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedTime by remember { mutableStateOf(LocalTime.now()) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
+    var showInfoDialog by remember { mutableStateOf(false) }
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MMMM yyyy", Locale.GERMANY)
     var imageResource by remember { mutableStateOf(R.drawable.fatima) } //Default image
     val titleFont = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
+    val now = LocalDateTime.now()
+    val notificationTime = LocalDateTime.of(selectedDate, selectedTime)
+    val delay = Duration.between(now, notificationTime).toMillis()
+
+    // Launcher to ask for permission to sent notifications
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+            // Permission granted
+            } else {
+            // Permission denied
+            }
+        }
+    )
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
@@ -84,15 +102,6 @@ fun NotificationScreen() {
                     .height(120.dp)
                     .padding(vertical = 32.dp)
             )
-//        Box(
-//            modifier = Modifier.fillMaxWidth(),
-//            contentAlignment = Alignment.Center
-//        ){
-//            Text(  modifier = Modifier.padding(horizontal = 16.dp),
-//                text = "Speichern Sie eine Erinnerung über eine Novene!",
-//                style = TextStyle(fontFamily = titleFont, fontSize = MaterialTheme.typography.headlineMedium.fontSize),
-//            )
-//        }
             val imageWidth =
                 LocalConfiguration.current.screenWidthDp.dp - (38.dp * 2) // Caluclate width
             Image(
@@ -238,6 +247,22 @@ fun NotificationScreen() {
             text = { Text("Sie erhalten eine Erinnerung für die Novene $selectedNovenenname am: $formattedDateTime Uhr?") },
             confirmButton = {
                 TextButton(onClick = {
+                    // Request permission for notifciation
+                    launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    // Schedule the notification
+                    val notificationWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
+                        .setInputData(
+                            workDataOf(
+                                "title" to "Erinnerung für $selectedNovenenname",
+                                "content" to "Ihre Novene beginnt heute!"
+                            )
+                        )
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS) // Calculate delay
+                        .build()
+
+                    // Enqueue the work request
+                    WorkManager.getInstance(context).enqueue(notificationWorkRequest)
+
                     showConfirmationDialog = false
                 }) {
                     Text("Bestätigen")
@@ -251,6 +276,7 @@ fun NotificationScreen() {
         )
     }
 }
+
 
 @Composable
 fun AndroidDatePickerDialog(

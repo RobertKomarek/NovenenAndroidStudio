@@ -12,7 +12,7 @@ class NotificationReceiver : BroadcastReceiver() {
         val notificationManager = NotificationManagerCompat.from(context)
         val noveneName = intent.getStringExtra("noveneName") ?: "Novene"
         val notification = NotificationCompat.Builder(context, "novene_channel_id")
-            .setSmallIcon(R.drawable.notification_icon)
+            .setSmallIcon(R.drawable.bell)
             .setContentTitle("Erinnerung für $noveneName")
             .setContentText("Ihre Novene beginnt jetzt.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
