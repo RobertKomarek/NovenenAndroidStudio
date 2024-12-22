@@ -32,7 +32,7 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters):
 
         // Build the notification
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.bell) // Replace with your icon
+            .setSmallIcon(R.drawable.dove) // Replace with your icon
             .setContentTitle(title)
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
