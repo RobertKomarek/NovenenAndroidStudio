@@ -50,13 +50,12 @@ fun NotificationScreen() {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedTime by remember { mutableStateOf(LocalTime.now()) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
-    var showInfoDialog by remember { mutableStateOf(false) }
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MMMM yyyy", Locale.GERMANY)
     var imageResource by remember { mutableStateOf(R.drawable.fatima) } //Default image
-    val titleFont = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
     val now = LocalDateTime.now()
     val notificationTime = LocalDateTime.of(selectedDate, selectedTime)
     val delay = Duration.between(now, notificationTime).toMillis()
+    val scrollState = rememberScrollState()
 
     // Launcher to ask for permission to sent notifications
     val launcher = rememberLauncherForActivityResult(
@@ -85,6 +84,7 @@ fun NotificationScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(Purple80, Color.LightGray, Color.White),

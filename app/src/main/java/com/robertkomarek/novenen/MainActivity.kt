@@ -1,6 +1,7 @@
 package com.robertkomarek.novenen
 
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -51,6 +52,22 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+//    override fun onConfigurationChanged(newConfig: Configuration) {
+//        super.onConfigurationChanged(newConfig)
+//
+//        // Check the orientation
+//        when (newConfig.orientation) {
+//            Configuration.ORIENTATION_LANDSCAPE -> {
+//                // Adjust layout for landscape orientation
+//                // ...
+//            }
+//            Configuration.ORIENTATION_PORTRAIT -> {
+//                // Adjust layout for portrait orientation
+//                // ...
+//            }
+//        }
+//    }
 }
 
 @Composable

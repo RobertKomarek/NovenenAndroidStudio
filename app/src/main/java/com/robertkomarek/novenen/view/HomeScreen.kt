@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -38,6 +39,8 @@ import com.robertkomarek.novenen.model.Novene
 import com.robertkomarek.novenen.repository.RepositoryNovenen
 import kotlin.jvm.java
 import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +51,7 @@ fun HomeScreen(navController: NavHostController) {
     val context = LocalContext.current
     val repository = RepositoryNovenen(context)
     val novenenList = remember { mutableStateListOf<Novene>() }
+    val titleFont = FontFamily(Font(R.font.sacramento, FontWeight.Bold))
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
@@ -62,6 +66,24 @@ fun HomeScreen(navController: NavHostController) {
     }
 
     LazyColumn {
+        // Add Header item at the top
+        item {
+            Text(
+                text = "N O V E N E N",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                style = TextStyle(
+                    fontFamily = titleFont,
+                    fontSize = MaterialTheme.typography.displayMedium.fontSize,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = Color.DarkGray
+                    //textDecoration = TextDecoration.Underline
+                )
+            )
+        }
+
         items(novenenList) { novene ->
             NoveneItem(novene) {
                 navController.navigate("details/${novene.Novenenname}")
