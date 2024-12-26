@@ -10,7 +10,7 @@ sealed class BottomNavItem(var title: String, var icon: @Composable () -> ImageV
 
     object HomeScreen : BottomNavItem("Novenen", { BookmarkIcon(R.drawable.baseline_view_list_32) }, "novenen")
     object BiblePassageScreen : BottomNavItem("Bibelstelle", { BookmarkIcon(R.drawable.baseline_menu_book_32) }, "biblepassage")
-    object SettingsScreen : BottomNavItem("Lesezeichen", { BookmarkIcon(R.drawable.baseline_app_settings_alt_32) }, "bookmarks")
+    object SettingsScreen : BottomNavItem("Settings", { BookmarkIcon(R.drawable.baseline_info_outline_32) }, "bookmarks")
     object NotificationScreen :
         BottomNavItem("Erinnerung", { BookmarkIcon(R.drawable.baseline_notifications_32) }, "notification")
 }

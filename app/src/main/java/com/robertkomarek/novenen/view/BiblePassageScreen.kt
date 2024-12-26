@@ -4,49 +4,41 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.robertkomarek.novenen.R
 import com.robertkomarek.novenen.model.Bibelstelle
+import com.robertkomarek.novenen.model.Biblepanorama
 import com.robertkomarek.novenen.repository.RepositoryBibelstelle
 import java.io.IOException
 import com.robertkomarek.novenen.ui.theme.PurpleGrey40
 import com.robertkomarek.novenen.ui.theme.PaperColor
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BiblePassageScreen() {
     val context = LocalContext.current
     val repository = RepositoryBibelstelle(context)
     val randomBiblePassage = repository.loadBibelstelle()
+    val randomBiblepanorama = loadRandomBiblepanoramaFromJson(context)
     var showDetails by remember { mutableStateOf(false) }// State for card visibility
 
     // LaunchedEffect to reset showDetails when navigating back
@@ -65,7 +57,8 @@ fun BiblePassageScreen() {
                 .weight(1f) // Ensures the image gets appropriate space
             ) { // Corrected modifier and fillMaxSize
                 if (!showDetails) {
-                BiblePassageImage(randomBiblePassage, context)
+                    BiblePassageImage(randomBiblepanorama, context)
+                    //BiblePassageImage(randomBiblePassage, context)
 
                 } else {
                     BiblePassageDetails(
@@ -98,33 +91,75 @@ fun HandleBackPress(showDetails: Boolean, onBack: () -> Unit) {
 }
 
 @Composable
-fun BiblePassageImage(bibelstelle: Bibelstelle, context: Context) {
-    val bitmap = remember(bibelstelle.imagePath) {
-        bibelstelle.imagePath?.let { loadBitmapFromPath(context, it) }
+fun BiblePassageImage(randomBiblepanorama: Biblepanorama?, context: Context) {
+    val myFont = FontFamily(Font(R.font.sacramento, FontWeight.Normal))
+    val bitmap = remember(randomBiblepanorama?.Image) {
+        randomBiblepanorama?.Image?.let {
+            loadBitmapFromPath(context, "images_biblepanorama/$it")
+        }
     }
 
     if (bitmap != null) {
-        Image(
-            bitmap = bitmap.asImageBitmap(),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(2.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .border(3.dp, Color.LightGray, RoundedCornerShape(16.dp)),
-            contentScale = ContentScale.Crop // Adjust content scale as needed
-        )
+        Box {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(2.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .border(3.dp, Color.LightGray, RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Crop // Adjust content scale as needed
+            )
+
+            // Overlapping label
+            Text(
+                text = randomBiblepanorama?.Description ?: "", // Use Description or empty string if null
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(20.dp)
+                    .background(Color.White.copy(alpha = 0.6f), RoundedCornerShape(4.dp))
+                    .padding(3.dp),
+                style = TextStyle(
+                    fontFamily = myFont,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
+                )
+            )
+        }
+
     } else {
         // ... (Existing code for "No Image" placeholder) ...
     }
 }
 
+fun loadRandomBiblepanoramaFromJson(context: Context): Biblepanorama? {
+    val jsonString = context.assets.open("Biblepanorama.json").bufferedReader().use { it.readText() }
+    val gson = Gson()
+    val listBiblepanoramaType = object : TypeToken<List<Biblepanorama>>() {}.type
+    val biblepanoramaList = gson.fromJson<List<Biblepanorama>>(jsonString, listBiblepanoramaType)
+
+    return if (biblepanoramaList.isNotEmpty()) {
+        biblepanoramaList.random() // Pick a random item
+    } else {
+        null // Return null if the list is empty
+    }
+}
+
+// Function to load a Bitmap from an image path
+fun loadBitmapFromPath(context: Context, path: String): Bitmap? {
+    return try {
+        context.assets.open(path).use { BitmapFactory.decodeStream(it) }
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
+}
 
 @Composable
 fun BiblePassageButtonCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
-
     val fontRamillas = FontFamily(Font(R.font.tt_ramillas_trial_black, FontWeight.Normal))
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -201,15 +236,7 @@ fun BiblePassageDetails(bibelstelle: Bibelstelle, modifier: Modifier = Modifier)
     }
 }
 
-// Function to load a Bitmap from an image path
-fun loadBitmapFromPath(context: Context, path: String): Bitmap? {
-    return try {
-        context.assets.open(path).use { BitmapFactory.decodeStream(it) }
-    } catch (e: IOException) {
-        e.printStackTrace()
-        null
-    }
-}
+
 
 
 

@@ -1,7 +1,5 @@
 package com.robertkomarek.novenen.model
 
-import android.graphics.Bitmap
-
 data class Bibelstelle (
     val LfdNr: String,
     val ID: String,
