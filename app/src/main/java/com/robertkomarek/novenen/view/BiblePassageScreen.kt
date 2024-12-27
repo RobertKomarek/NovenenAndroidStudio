@@ -15,9 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +31,11 @@ import com.robertkomarek.novenen.repository.RepositoryBibelstelle
 import java.io.IOException
 import com.robertkomarek.novenen.ui.theme.PurpleGrey40
 import com.robertkomarek.novenen.ui.theme.PaperColor
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.focus.focusModifier
 
 
 @Composable
@@ -93,6 +98,9 @@ fun HandleBackPress(showDetails: Boolean, onBack: () -> Unit) {
 @Composable
 fun BiblePassageImage(randomBiblepanorama: Biblepanorama?, context: Context) {
     val myFont = FontFamily(Font(R.font.sacramento, FontWeight.Normal))
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope() // Create a CoroutineScope
+    var showDialog by remember { mutableStateOf(false)}
     val bitmap = remember(randomBiblepanorama?.Image) {
         randomBiblepanorama?.Image?.let {
             loadBitmapFromPath(context, "images_biblepanorama/$it")
@@ -112,6 +120,26 @@ fun BiblePassageImage(randomBiblepanorama: Biblepanorama?, context: Context) {
                 contentScale = ContentScale.Crop // Adjust content scale as needed
             )
 
+            // Top right image with notification
+            IconButton(
+                onClick = { showDialog = true },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            ){
+                Box(
+                    modifier = Modifier
+                        .background(Color.White.copy(alpha = 0.6f), shape = CircleShape)
+                        .padding(4.dp)
+                ){
+                    Icon(
+                        painter = painterResource(id = R.drawable.touch),
+                        contentDescription = "Info",
+                        tint = Color.Black
+                    )
+                }
+            }
+
             // Overlapping label
             Text(
                 text = randomBiblepanorama?.Description ?: "", // Use Description or empty string if null
@@ -127,8 +155,26 @@ fun BiblePassageImage(randomBiblepanorama: Biblepanorama?, context: Context) {
                     color = Color.Black
                 )
             )
-        }
 
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text(randomBiblepanorama?.Book ?: "") },
+                    text = {
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            Text(randomBiblepanorama?.Caption ?: "")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(randomBiblepanorama?.Scripture ?: "")
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showDialog = false }) {
+                            Text("Zurück")
+                        }
+                    }
+                )
+            }
+        }
     } else {
         // ... (Existing code for "No Image" placeholder) ...
     }
